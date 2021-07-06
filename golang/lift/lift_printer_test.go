@@ -58,3 +58,17 @@ func TestLargeLiftSystem(t *testing.T) {
 		lift.Call{-1, lift.Up})
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
+
+func TestSimpleLiftMove(t *testing.T) {
+	liftSystem := lift.NewSystem()
+	liftSystem.AddLifts(
+		lift.Lift{"A", 3, []int{0}, false},
+		lift.Lift{"B", 2, []int{}, false},
+		lift.Lift{"C", 2, []int{}, true},
+		lift.Lift{"D", 0, []int{0}, false})
+	liftSystem.AddCalls(lift.Call{1, lift.Down})
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.SetLiftFloor(0,0)
+	liftSystem.RemoveRequest(0, 0)
+	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+}
