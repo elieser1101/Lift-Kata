@@ -66,6 +66,10 @@ func (s System) Tick() {
 	panic("Implement this method")
 }
 
+func (s System)AddRequest(liftIndex int, floor int) {
+	s.lifts[liftIndex].Requests = append(s.lifts[liftIndex].Requests, floor)
+}
+
 func (s System)RemoveRequest(liftIndex int, index int) {
 	s.lifts[liftIndex].Requests = append(s.lifts[liftIndex].Requests[:index], s.lifts[liftIndex].Requests[index+1:]...)
 }
