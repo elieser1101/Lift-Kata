@@ -119,3 +119,24 @@ func TestFullfillRequest(t *testing.T) {
     assert.True(t, fullfilledRequest)
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
+
+//TODO: add more tests for this scenario
+func TestFullfillCall(t *testing.T) {
+	liftSystem := lift.NewSystem()
+	liftSystem.AddLifts(
+		lift.Lift{"A", 3, []int{0}, false},
+		lift.Lift{"B", 2, []int{}, false},
+		lift.Lift{"C", 2, []int{}, true},
+		lift.Lift{"D", 0, []int{0}, false})
+	liftSystem.AddCalls(lift.Call{1, lift.Down})
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.SetLiftFloor(1,1)
+	liftSystem.OpenDoors(1)
+	//we should iterate over multiple calls
+	//here the call is just one
+	// we need to improve this, using index seems prone to error
+    fullfilledCall := liftSystem.FullfilledCall(0)
+	liftSystem.RemoveCall(0)
+    assert.True(t, fullfilledCall)
+	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+}
