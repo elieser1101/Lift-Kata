@@ -140,3 +140,19 @@ func TestFullfillCall(t *testing.T) {
     assert.True(t, fullfilledCall)
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
+
+//C lift keep original position because doors are oppen
+func TestMoveOnlyIfDoorClosed(t *testing.T) {
+	liftSystem := lift.NewSystem()
+	liftSystem.AddLifts(
+		lift.Lift{"A", 3, []int{0}, false},
+		lift.Lift{"B", 2, []int{}, false},
+		lift.Lift{"C", 2, []int{}, true},
+		lift.Lift{"D", 0, []int{0}, false})
+	liftSystem.AddCalls(lift.Call{1, lift.Down})
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.SetLiftFloor(2,0)
+	//remove request should happen if fullfiled request
+	//liftSystem.RemoveRequest(0, 0)
+	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+}

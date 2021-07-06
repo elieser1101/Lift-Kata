@@ -113,7 +113,9 @@ func (s System)FullfilledRequests(liftIndex int) bool {
 }
 
 func (s System)SetLiftFloor(liftIndex int, floor int) {
-	s.lifts[liftIndex].Floor = floor
+	if !s.lifts[liftIndex].DoorsOpen {
+		s.lifts[liftIndex].Floor = floor
+	}
 }
 
 //am i using it?
