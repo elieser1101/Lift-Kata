@@ -64,6 +64,9 @@ func (s System) CallsFor(floor int) (calls []Call) {
 // Tick ..
 func (s System) Tick() {
 	panic("Implement this method")
+    //check all lifts
+    //if lift has rquest movelift(update flor and remove request)
+    //
 }
 
 func (s System)AddRequest(liftIndex int, floor int) {
@@ -74,9 +77,20 @@ func (s System)RemoveRequest(liftIndex int, index int) {
 	s.lifts[liftIndex].Requests = append(s.lifts[liftIndex].Requests[:index], s.lifts[liftIndex].Requests[index+1:]...)
 }
 
+//should happen before removing request
+func (s System)FullfilledRequests(liftIndex int) bool {
+    //flor in requstes
+    //door is open
+    //then remove?
+
+    floorsMatch := contains(s.lifts[liftIndex].Requests, s.lifts[liftIndex].Floor)
+    return floorsMatch && s.lifts[liftIndex].DoorsOpen
+}
+
 func (s System)SetLiftFloor(liftIndex int, floor int) {
 	s.lifts[liftIndex].Floor = floor
 }
+
 
 func (s System)OpenDoors(liftIndex int) {
 	s.lifts[liftIndex].DoorsOpen = true
@@ -84,4 +98,14 @@ func (s System)OpenDoors(liftIndex int) {
 
 func (s System)CloseDoors(liftIndex int) {
 	s.lifts[liftIndex].DoorsOpen = false
+}
+
+//utils
+func contains(s []int, e int) bool {
+    for _, a := range s {
+        if a == e {
+            return true
+        }
+    }
+    return false
 }
