@@ -77,3 +77,11 @@ func (s System)RemoveRequest(liftIndex int, index int) {
 func (s System)SetLiftFloor(liftIndex int, floor int) {
 	s.lifts[liftIndex].Floor = floor
 }
+
+func (s System)OpenDoors(liftIndex int) {
+	s.lifts[liftIndex].DoorsOpen = true
+}
+
+func (s System)CloseDoors(liftIndex int) {
+	s.lifts[liftIndex].DoorsOpen = false
+}
