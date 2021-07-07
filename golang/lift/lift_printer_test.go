@@ -156,3 +156,20 @@ func TestMoveOnlyIfDoorClosed(t *testing.T) {
 	//liftSystem.RemoveRequest(0, 0)
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
+
+func TestTimedMove(t *testing.T) {
+	liftSystem := lift.NewSystem()
+	liftSystem.AddLifts(
+		lift.Lift{"A", 3, []int{0}, false},
+		lift.Lift{"B", 2, []int{}, false},
+		lift.Lift{"C", 2, []int{}, true},
+		lift.Lift{"D", 0, []int{0}, false})
+	liftSystem.AddCalls(lift.Call{1, lift.Down})
+	liftSystem.AddFloors(0, 1, 2, 3)
+    ops :=0
+    for ops < 5{
+        ops += 1
+		liftSystem.Tick()
+    }
+	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+}

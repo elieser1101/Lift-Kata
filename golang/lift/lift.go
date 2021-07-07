@@ -87,11 +87,14 @@ func (s System) CallsFor(floor int) (calls []Call) {
 }
 
 // Tick ..
-func (s System) Tick() {
-	panic("Implement this method")
-    //check all lifts
-    //if lift has rquest movelift(update flor and remove request)
-    //
+func (s System) Tick() {//RECEIVES call and request object/mock to help simulate what is coming
+	for i, l := range s.lifts {
+        s.checkFloorOperation(i)//open/closedor
+		if len(l.Requests) > 0 {
+			s.MoveLift(i)
+			s.CheckFullfilledRequests(i)// should remove request fullfilled
+		}
+	}
 }
 
 func (s System)AddRequest(liftIndex int, floor int) {
@@ -99,7 +102,9 @@ func (s System)AddRequest(liftIndex int, floor int) {
 }
 
 func (s System)RemoveRequest(liftIndex int, index int) {
-	s.lifts[liftIndex].Requests = append(s.lifts[liftIndex].Requests[:index], s.lifts[liftIndex].Requests[index+1:]...)
+    if index < len(s.lifts[liftIndex].Requests){
+        s.lifts[liftIndex].Requests = append(s.lifts[liftIndex].Requests[:index], s.lifts[liftIndex].Requests[index+1:]...)
+    }
 }
 
 //should happen before removing request
@@ -112,6 +117,12 @@ func (s System)FullfilledRequests(liftIndex int) bool {
     return floorsMatch && s.lifts[liftIndex].DoorsOpen
 }
 
+func (s System)CheckFullfilledRequests(liftIndex int) {
+    if s.FullfilledRequests(liftIndex){
+        s.RemoveRequest(liftIndex, 0)//Assumes there is always somethin in the request
+    }
+}
+
 func (s System)SetLiftFloor(liftIndex int, floor int) {
 	if !s.lifts[liftIndex].DoorsOpen {
 		s.lifts[liftIndex].Floor = floor
@@ -119,8 +130,15 @@ func (s System)SetLiftFloor(liftIndex int, floor int) {
 }
 
 //am i using it?
-func (s System)MoveLift(liftIndex int, floor int) {
-	s.lifts[liftIndex].Floor = floor
+func (s System)MoveLift(liftIndex int) {
+    //get direction
+    //move one step in that direction
+    lift := s.lifts[liftIndex]
+    if lift.Floor < lift.Requests[0] {//asuming there is always a request is not compatible with calls
+        s.SetLiftFloor(liftIndex, lift.Floor + 1)
+    } else if lift.Floor > lift.Requests[0] {
+        s.SetLiftFloor(liftIndex, lift.Floor - 1)
+    }
 }
 
 func (s System)OpenDoors(liftIndex int) {
@@ -130,6 +148,16 @@ func (s System)OpenDoors(liftIndex int) {
 func (s System)CloseDoors(liftIndex int) {
 	s.lifts[liftIndex].DoorsOpen = false
 }
+
+func (s System)checkFloorOperation(liftIndex int) {
+    floorsMatch := contains(s.lifts[liftIndex].Requests, s.lifts[liftIndex].Floor)
+	if floorsMatch {
+        s.OpenDoors(liftIndex)
+    } else {
+        s.CloseDoors(liftIndex)
+    }
+}
+
 
 //utils
 func contains(s []int, e int) bool {
