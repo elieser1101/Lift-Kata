@@ -1,5 +1,6 @@
 package lift
 
+import "sort"
 // Direction ..
 type Direction int
 
@@ -50,6 +51,17 @@ func (s *System) AddCalls(calls ...Call) {
 	s.calls = append(s.calls, calls...)
 }
 
+func (s *System) matchCallsToRequest(lift Lift) {
+	for _, c := range s.calls {
+		if c.Floor < lift.Floor && c.Floor > lift.Requests[0] {//only going down
+            floorsMatch := contains(lift.Requests, c.Floor)
+            if !floorsMatch {
+                Insert(lift.Requests, c.Floor)
+            }
+		}
+	}
+}
+
 func (s *System) RemoveCall(callIndex int) {
 	s.calls = append(s.calls[:callIndex], s.calls[callIndex+1:]...)
 }
@@ -75,6 +87,14 @@ func (s System)FullfilledCall(callIndex int) bool {
 	return false
 }
 
+func (s *System) CheckFullfilledCalls() {
+    for i, _ := range s.calls{
+        if s.FullfilledCall(i){
+            s.RemoveCall(i)
+        }
+    }
+}
+
 // CallsFor ..
 func (s System) CallsFor(floor int) (calls []Call) {
 	calls = []Call{}
@@ -87,12 +107,14 @@ func (s System) CallsFor(floor int) (calls []Call) {
 }
 
 // Tick ..
-func (s System) Tick() {//RECEIVES call and request object/mock to help simulate what is coming
+func (s System) Tick() {
 	for i, l := range s.lifts {
+        s.matchCallsToRequest(l)
         s.checkFloorOperation(i)//open/closedor
 		if len(l.Requests) > 0 {
 			s.MoveLift(i)
 			s.CheckFullfilledRequests(i)// should remove request fullfilled
+			s.CheckFullfilledCalls()// should remove request fullfilled
 		}
 	}
 }
@@ -167,4 +189,12 @@ func contains(s []int, e int) bool {
         }
     }
     return false
+}
+
+func Insert(ss []int, s int) []int {
+    i := sort.SearchInts(ss, s)
+    ss = append(ss, 0)
+    copy(ss[i+1:], ss[i:])
+    ss[i] = s
+    return ss
 }

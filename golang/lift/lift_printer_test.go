@@ -157,7 +157,7 @@ func TestMoveOnlyIfDoorClosed(t *testing.T) {
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
 
-func TestTimedMove(t *testing.T) {
+func TestTimedMove(t *testing.T) {//tests requests mo0vements not calls
 	liftSystem := lift.NewSystem()
 	liftSystem.AddLifts(
 		lift.Lift{"A", 3, []int{0}, false},
@@ -173,3 +173,29 @@ func TestTimedMove(t *testing.T) {
     }
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
+
+func TestTimedMoveIncludingCalls(t *testing.T) {
+	liftSystem := lift.NewSystem()
+	liftSystem.AddLifts(
+		lift.Lift{"A", 3, []int{0}, false},
+		lift.Lift{"B", 2, []int{}, false},
+		lift.Lift{"C", 2, []int{}, true},
+		lift.Lift{"D", 0, []int{0}, false})
+	liftSystem.AddCalls(lift.Call{1, lift.Down})
+	liftSystem.AddFloors(0, 1, 2, 3)
+    ops :=0
+    for ops < 5{//A lift should pick the call on flor 1
+        ops += 1
+		liftSystem.Tick()
+    }
+	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+}
+//fulltest
+//to simulate use of the lift sytem
+//create systems
+//ad initial requests/calls(could be the same as previous stage)
+//while request/calls non empty in all lifts or system
+// tick
+//   check fullfilled requests
+//   check fullfilled calls
+// add new request/calls, should i create a test struct? to contain details
